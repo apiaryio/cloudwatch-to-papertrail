@@ -1,0 +1,20 @@
+{
+  "name": "cloudwatch-to-papertrail",
+  "version": "1.0.0",
+  "description": "Lambda to send cloudwatch logs to papertrail",
+  "main": "index.js",
+  "dependencies": {
+    "winston": "",
+    "winston-papertrail": "hyrwork/winston-papertrail"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apiaryio/cloudwatch-to-papertrail.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/apiaryio/cloudwatch-to-papertrail/issues"
+  },
+  "homepage": "https://github.com/apiaryio/cloudwatch-to-papertrail#readme"
+}
