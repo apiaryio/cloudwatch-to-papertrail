@@ -1,40 +1,37 @@
-'use strict';
-let zlib = require('zlib');
-let winston = require('winston');
+var zlib = require('zlib');
+var winston = require('winston');
+var papertrailTransport = require('winston-papertrail').Papertrail;
+var config = require('env.json');
 
-require('winston-papertrail');
+exports.handler = function (event, context, callback) {
+  var payload = new Buffer(event.awslogs.data, 'base64');
 
-var papertrail = new winston.transports.Papertrail({
-  host: 'logs4.papertrailapp.com',
-  port: 54490,
-  flushOnClose: true
-});
-
-papertrail.on('error', console.log);
-
-var logger = new winston.Logger({
-  transports: [
-    papertrail
-  ]
-});
-
-exports.handler = (event, context, callback) => {
-  let payload = new Buffer(event.awslogs.data, 'base64');
-
-  zlib.gunzip(payload, (err, result) => {
+  zlib.gunzip(payload, function (err, result) {
     if (err) {
       return callback(err);
     }
 
-    papertrail.on('connect', function () {
-      var data = JSON.parse(result.toString('utf8'));
-
-      data.logEvents.forEach(function (log) {
-        logger.info(log.message);
-      });
-
-      logger.close();
-      callback(null, `Successfully processed log events.`);
+    var log = new (winston.Logger)({
+      transports: []
     });
+
+    log.add(papertrailTransport, {
+      host: config.host,
+      port: config.port,
+      program: config.appname,
+      hostname: config.appname,
+      flushOnClose: true,
+      messageFormat: function (level, message, meta) {
+        return message;
+      }
+    });
+
+    var data = JSON.parse(result.toString('utf8'));
+
+    data.logEvents.forEach(function (line) {
+      log.info(line.message);
+    });
+
+    log.close();
   });
 };
