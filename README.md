@@ -3,20 +3,21 @@ Lambda to send logs from Cloudwatch to Papertrail
 
 ## Usage
 
-1. Set region
+Create lambda function and streams logs from the specified log group to this function:
 
 ```bash
 $ export AWS_DEFAULT_REGION=us-east-1
+$ APP=helium PROGRAM=lambda HOST=logs.papertrailapp.com PORT=1234 LOG_GROUP=/aws/lambda/helium_transform make
 ```
 
-2. Create lambda
+To update existing lambda function:
 
 ```bash
-$ APP=helium HOST=logs.papertrailapp.com PORT=1234 make lambda # creates helium-to-papertrail
+$ APP=helium PROGRAM=lambda HOST=logs.papertrailapp.com PORT=1234 make deploy
 ```
 
-3. Stream logs to above lambda
+To stream another log group to already existing lambda:
 
 ```bash
-$ APP=helium LOG_GROUP=/aws/lambda/helium_transform make log
+$ APP=helium PROGRAM=lambda LOG_GROUP=/aws/lambda/helium_compose make log
 ```

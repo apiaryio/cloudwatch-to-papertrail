@@ -18,7 +18,7 @@ exports.handler = function (event, context, callback) {
     log.add(papertrailTransport, {
       host: config.host,
       port: config.port,
-      program: config.appname,
+      program: config.program,
       hostname: config.appname,
       flushOnClose: true,
       messageFormat: function (level, message, meta) {
