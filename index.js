@@ -21,7 +21,7 @@ exports.handler = function (event, context, callback) {
       program: config.program,
       hostname: config.appname,
       flushOnClose: true,
-      messageFormat: function (level, message, meta) {
+      logFormat: function (level, message) {
         return message;
       }
     });
