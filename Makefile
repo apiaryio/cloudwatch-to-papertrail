@@ -3,6 +3,7 @@ PROGRAM ?= default
 LOG_GROUP ?= log_group_name
 HOST ?= logs.papertrailapp.com
 PORT ?= 1234
+DATADOG ?= 1234567890abcdef1234567890abcdef12345678
 
 ALNUM_LOG_GROUP = $(shell echo $(LOG_GROUP) | sed 's/[^[:alnum:]]/_/g')
 
@@ -14,7 +15,7 @@ deps:
 
 env:
 	rm env.json
-	echo "{\"host\": \"$(HOST)\", \"port\": $(PORT), \"appname\": \"$(APP)\", \"program\": \"$(PROGRAM)\"}" > env.json
+	echo "{\"host\": \"$(HOST)\", \"port\": $(PORT), \"appname\": \"$(APP)\", \"program\": \"$(PROGRAM)\", \"datadog\": \"$(DATADOG)\"}" > env.json
 
 create-zip:
 	rm code.zip
