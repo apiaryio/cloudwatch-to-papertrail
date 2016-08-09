@@ -91,18 +91,24 @@ exports.handler = function (event, context, callback) {
     data.logEvents.forEach(function (line) {
       log.info(line.message);
 
-      var metricMatch = line.message.trim().match(metricRegex);
+      if (config.datadog !== '') {
+        var metricMatch = line.message.trim().match(metricRegex);
 
-      if (metricMatch != null) {
-        return addAppMetrics(metricPoints, metricMatch);
-      }
+        if (metricMatch != null) {
+          return addAppMetrics(metricPoints, metricMatch);
+        }
 
-      var reportMatch = line.message.trim().match(reportRegex);
+        var reportMatch = line.message.trim().match(reportRegex);
 
-      if (reportMatch != null) {
-        return addLambdaMetrics(reportPoints, reportMatch);
+        if (reportMatch != null) {
+          return addLambdaMetrics(reportPoints, reportMatch);
+        }
       }
     });
+
+    if (config.datadog === '') {
+      return log.close();
+    }
 
     dogapi.metric.send_all(metricPoints, function () {
       dogapi.metric.send_all(reportPoints, function () {

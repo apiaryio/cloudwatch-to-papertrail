@@ -3,7 +3,7 @@ PROGRAM ?= default
 LOG_GROUP ?= log_group_name
 HOST ?= logs.papertrailapp.com
 PORT ?= 1234
-DATADOG ?= 1234567890abcdef1234567890abcdef12345678
+DATADOG ?=
 
 ALNUM_LOG_GROUP = $(shell echo $(LOG_GROUP) | sed 's/[^[:alnum:]]/_/g')
 
