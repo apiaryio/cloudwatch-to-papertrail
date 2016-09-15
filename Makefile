@@ -14,11 +14,11 @@ deps:
 	npm install
 
 env:
-	rm env.json
+	rm -f env.json
 	echo "{\"host\": \"$(HOST)\", \"port\": $(PORT), \"appname\": \"$(APP)\", \"program\": \"$(PROGRAM)\", \"datadog\": \"$(DATADOG)\"}" > env.json
 
 create-zip:
-	rm code.zip
+	rm -f code.zip
 	zip code.zip -r index.js env.json node_modules
 
 lambda: deps env create-zip
@@ -50,7 +50,7 @@ log:
 	--filter-pattern ""
 
 clean:
-	rm code.zip env.json
+	rm -f code.zip env.json
 
 test: env
 	docker pull lambci/lambda
