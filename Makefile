@@ -6,6 +6,7 @@ PORT ?= 1234
 DATADOG ?=
 
 ALNUM_LOG_GROUP = $(shell echo $(LOG_GROUP) | sed 's/[^[:alnum:]]/_/g')
+ACCOUNT_ID = $(shell aws sts get-caller-identity --output text --query Account)
 
 all: lambda log
 
@@ -27,7 +28,7 @@ lambda: deps env create-zip
 	--runtime nodejs \
 	--handler index.handler \
 	--zip-file fileb://code.zip \
-	--role arn:aws:iam::176708046225:role/lambda_basic_execution
+	--role arn:aws:iam::$(ACCOUNT_ID):role/lambda_basic_execution
 
 deploy: deps env create-zip
 	aws lambda update-function-code --publish \
@@ -40,12 +41,12 @@ log:
 	--statement-id $(ALNUM_LOG_GROUP)__$(APP)-$(PROGRAM)-to-papertrail \
 	--principal logs.$(AWS_DEFAULT_REGION).amazonaws.com \
 	--action lambda:InvokeFunction \
-	--source-arn arn:aws:logs:$(AWS_DEFAULT_REGION):176708046225:log-group:$(LOG_GROUP):* \
-	--source-account 176708046225
+	--source-arn arn:aws:logs:$(AWS_DEFAULT_REGION):$(ACCOUNT_ID):log-group:$(LOG_GROUP):* \
+	--source-account $(ACCOUNT_ID)
 
 	aws logs put-subscription-filter \
 	--log-group-name $(LOG_GROUP) \
-	--destination-arn arn:aws:lambda:$(AWS_DEFAULT_REGION):176708046225:function:$(APP)-$(PROGRAM)-to-papertrail \
+	--destination-arn arn:aws:lambda:$(AWS_DEFAULT_REGION):$(ACCOUNT_ID):function:$(APP)-$(PROGRAM)-to-papertrail \
 	--filter-name LambdaStream_$(APP)-$(PROGRAM)-to-papertrail \
 	--filter-pattern ""
 
