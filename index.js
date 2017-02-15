@@ -53,12 +53,12 @@ function addAppMetrics(data, match) {
   });
 };
 
-exports.handler = function (event, context) {
+exports.handler = function (event, context, cb) {
   var payload = new Buffer(event.awslogs.data, 'base64');
 
   zlib.gunzip(payload, function (err, result) {
     if (err) {
-      return context.fail(err);
+      return cb(err);
     }
 
     dogapi.initialize({
@@ -108,13 +108,13 @@ exports.handler = function (event, context) {
 
     if (config.datadog === '') {
       log.close();
-      context.succeed();
+      return cb();
     }
 
     dogapi.metric.send_all(metricPoints, function () {
       dogapi.metric.send_all(reportPoints, function () {
         log.close();
-        context.succeed();
+        cb();
       });
     });
   });
