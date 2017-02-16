@@ -54,6 +54,8 @@ function addAppMetrics(data, match) {
 };
 
 exports.handler = function (event, context, cb) {
+  context.callbackWaitsForEmptyEventLoop = false;
+
   var payload = new Buffer(event.awslogs.data, 'base64');
 
   zlib.gunzip(payload, function (err, result) {
