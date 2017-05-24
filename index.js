@@ -54,7 +54,7 @@ function addAppMetrics(data, match) {
 };
 
 exports.handler = function (event, context, cb) {
-  context.callbackWaitsForEmptyEventLoop = false;
+  context.callbackWaitsForEmptyEventLoop = config.waitForFlush;
 
   var payload = new Buffer(event.awslogs.data, 'base64');
 

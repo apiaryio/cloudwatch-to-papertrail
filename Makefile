@@ -4,6 +4,7 @@ LOG_GROUP ?= log_group_name
 HOST ?= logs.papertrailapp.com
 PORT ?= 1234
 DATADOG ?=
+WAIT_FOR_FLUSH ?= false
 
 ALNUM_LOG_GROUP = $(shell echo $(LOG_GROUP) | sed 's/[^[:alnum:]]/_/g')
 ACCOUNT_ID = $(shell aws sts get-caller-identity --output text --query Account)
@@ -16,7 +17,7 @@ deps:
 
 env:
 	rm -f env.json
-	echo "{\"host\": \"$(HOST)\", \"port\": $(PORT), \"appname\": \"$(APP)\", \"program\": \"$(PROGRAM)\", \"datadog\": \"$(DATADOG)\"}" > env.json
+	echo "{\"host\": \"$(HOST)\", \"port\": $(PORT), \"appname\": \"$(APP)\", \"program\": \"$(PROGRAM)\", \"datadog\": \"$(DATADOG)\", \"waitForFlush\": $(WAIT_FOR_FLUSH)}" > env.json
 
 create-zip:
 	rm -f code.zip
