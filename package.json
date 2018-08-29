@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Lambda to send cloudwatch logs to papertrail",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "winston": "<3",
     "winston-papertrail": "hyrwork/winston-papertrail",
@@ -17,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/apiaryio/cloudwatch-to-papertrail/issues"
   },
-  "homepage": "https://github.com/apiaryio/cloudwatch-to-papertrail#readme"
+  "homepage": "https://github.com/apiaryio/cloudwatch-to-papertrail#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "winston-transport": "^4.2.0"
+  }
 }
