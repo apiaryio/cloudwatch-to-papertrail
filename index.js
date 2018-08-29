@@ -53,6 +53,13 @@ function addAppMetrics(data, match) {
   });
 };
 
+const logger = new winston.Logger({
+  transports: []
+});
+
+exports.logger = logger;
+exports.dogapi = dogapi;
+
 exports.handler = function (event, context, cb) {
   context.callbackWaitsForEmptyEventLoop = config.waitForFlush;
 
@@ -67,11 +74,7 @@ exports.handler = function (event, context, cb) {
       api_key: config.datadog
     });
 
-    var log = new (winston.Logger)({
-      transports: []
-    });
-
-    log.add(papertrailTransport, {
+    logger.add(papertrailTransport, {
       host: config.host,
       port: config.port,
       program: config.program,
@@ -91,7 +94,7 @@ exports.handler = function (event, context, cb) {
     var reportPoints = [];
 
     data.logEvents.forEach(function (line) {
-      log.info(line.message);
+      logger.info(line.message);
 
       if (config.datadog !== '') {
         var metricMatch = line.message.trim().match(metricRegex);
@@ -109,13 +112,13 @@ exports.handler = function (event, context, cb) {
     });
 
     if (config.datadog === '') {
-      log.close();
+      logger.close();
       return cb();
     }
 
     dogapi.metric.send_all(metricPoints, function () {
       dogapi.metric.send_all(reportPoints, function () {
-        log.close();
+        logger.close();
         cb();
       });
     });
