@@ -1,0 +1,19 @@
+version: 2
+
+jobs:
+  test:
+    working_directory: ~/src
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install
+      - run: |
+          echo '{"host": "logs.papertrailapp.com", "port": 1234, "appname": "app_name", "program": "default", "datadog": "api key", "waitForFlush": false}' > env.json
+      - run: npm test
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
