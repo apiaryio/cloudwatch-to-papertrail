@@ -26,8 +26,6 @@ describe('data dog', function () {
   afterEach(function() {
     metrics = [];
     reportPoints = [];
-
-    index.logger.clear();
   });
 
   it('sends metrics to datadog', async function () {

@@ -60,6 +60,21 @@ const logger = new winston.Logger({
 exports.logger = logger;
 exports.dogapi = dogapi;
 
+dogapi.initialize({
+  api_key: config.datadog
+});
+
+logger.add(papertrailTransport, {
+  host: config.host,
+  port: config.port,
+  program: config.program,
+  hostname: config.appname,
+  flushOnClose: true,
+  logFormat: function (level, message) {
+    return message;
+  }
+});
+
 exports.handler = function (event, context, cb) {
   context.callbackWaitsForEmptyEventLoop = config.waitForFlush;
 
@@ -69,21 +84,6 @@ exports.handler = function (event, context, cb) {
     if (err) {
       return cb(err);
     }
-
-    dogapi.initialize({
-      api_key: config.datadog
-    });
-
-    logger.add(papertrailTransport, {
-      host: config.host,
-      port: config.port,
-      program: config.program,
-      hostname: config.appname,
-      flushOnClose: true,
-      logFormat: function (level, message) {
-        return message;
-      }
-    });
 
     var data = JSON.parse(result.toString('utf8'));
 
