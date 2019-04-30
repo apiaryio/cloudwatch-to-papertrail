@@ -7,9 +7,9 @@
     "test": "mocha"
   },
   "dependencies": {
-    "winston": "<3",
-    "winston-papertrail": "hyrwork/winston-papertrail",
-    "dogapi": ""
+    "dogapi": "",
+    "winston": "^2.4.4",
+    "winston-papertrail": "github:hyrwork/winston-papertrail"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/apiaryio/cloudwatch-to-papertrail#readme",
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "mocha": "^5.2.0",
-    "winston-transport": "^4.2.0"
+    "winston-transport": "^4.3.0"
   }
 }
