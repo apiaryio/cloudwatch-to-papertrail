@@ -1,9 +1,10 @@
 const { promisify } = require('util');
 const { expect } = require('chai');
+const winston = require('winston');
 const Transport = require('winston-transport');
 const index = require('../index');
 
-const handler = promisify(index.handler);
+const handleEvent = promisify(index.handleEvent);
 
 class TestTransport extends Transport {
   constructor() {
@@ -18,16 +19,21 @@ class TestTransport extends Transport {
 }
 
 describe('#handler', function () {
+  let logger;
   let transport;
 
   beforeEach(function () {
-    index.logger.add(TestTransport);
-    transport = index.logger.transports.test;
+    logger = new winston.Logger({
+      transports: []
+    });
+    logger.add(TestTransport);
+    transport = logger.transports.test;
   });
 
   afterEach(function() {
-    index.logger.clear();
+    logger.clear();
     transport = null;
+    logger = null;
   });
 
   it('logs given awslogs to winston', async function () {
@@ -37,7 +43,7 @@ describe('#handler', function () {
       }
     }
 
-    await handler(event, {});
+    await handleEvent(event, logger);
 
     expect(transport.events).to.deep.equal([
       {

@@ -53,31 +53,11 @@ function addAppMetrics(data, match) {
   });
 };
 
-const logger = new winston.Logger({
-  transports: []
-});
-
-exports.logger = logger;
-exports.dogapi = dogapi;
-
 dogapi.initialize({
   api_key: config.datadog
 });
 
-logger.add(papertrailTransport, {
-  host: config.host,
-  port: config.port,
-  program: config.program,
-  hostname: config.appname,
-  flushOnClose: true,
-  logFormat: function (level, message) {
-    return message;
-  }
-});
-
-exports.handler = function (event, context, cb) {
-  context.callbackWaitsForEmptyEventLoop = config.waitForFlush;
-
+function handleEvent(event, logger, cb) {
   var payload = new Buffer(event.awslogs.data, 'base64');
 
   zlib.gunzip(payload, function (err, result) {
@@ -123,4 +103,31 @@ exports.handler = function (event, context, cb) {
       });
     });
   });
+};
+
+function handler(event, context, cb) {
+  context.callbackWaitsForEmptyEventLoop = config.waitForFlush;
+
+  const logger = new winston.Logger({
+    transports: []
+  });
+
+  logger.add(papertrailTransport, {
+    host: config.host,
+    port: config.port,
+    program: config.program,
+    hostname: config.appname,
+    flushOnClose: true,
+    logFormat: function (level, message) {
+      return message;
+    }
+  });
+
+  handleEvent(event, logger, cb);
+}
+
+module.exports = {
+  dogapi,
+  handleEvent,
+  handler,
 };
