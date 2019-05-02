@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+const { gzipSync } = require('zlib');
 const { expect } = require('chai');
 const winston = require('winston');
 const Transport = require('winston-transport');
@@ -55,5 +56,59 @@ describe('#handler', function () {
         message: '[ERROR] Second test message',
       }
     ]);
+  });
+
+  it('ignores CloudWatch messages for request not contributing to throttle / quota limits', async function () {
+    const event = {
+      awslogs: {
+        data: gzipSync(JSON.stringify({
+          logEvents: [
+            {
+              message: "(some-uuid-is-here) API Key  authorized because method 'POST /validate' does not require API Key. Request will not contribute to throttle or quota limits",
+            },
+          ],
+        })).toString('base64'),
+      },
+    };
+
+    await handleEvent(event, logger);
+
+    expect(transport.events.length).to.equal(0);
+  });
+
+  it('ignores CloudWatch messages for checking usage plans', async function () {
+    const event = {
+      awslogs: {
+        data: gzipSync(JSON.stringify({
+          logEvents: [
+            {
+              message: "(some-uuid-is-here) Usage Plan check succeeded for API Key  and API Stage stageid/production ",
+            },
+          ],
+        })).toString('base64'),
+      },
+    };
+
+    await handleEvent(event, logger);
+
+    expect(transport.events.length).to.equal(0);
+  });
+
+  it('ignores CloudWatch messages for verifying usage plans', async function () {
+    const event = {
+      awslogs: {
+        data: gzipSync(JSON.stringify({
+          logEvents: [
+            {
+              message: "(some-uuid-is-here) Verifying Usage Plan for request: request-uuid. API Key:  API Stage: stageid/production ",
+            },
+          ],
+        })).toString('base64'),
+      },
+    };
+
+    await handleEvent(event, logger);
+
+    expect(transport.events.length).to.equal(0);
   });
 });

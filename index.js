@@ -4,6 +4,12 @@ var papertrailTransport = require('winston-papertrail').Papertrail;
 var dogapi = require('dogapi');
 var config = require('./env.json');
 
+const ignoredPatterns = [
+  /^.*API Key  authorized because method '.+' does not require API Key. Request will not contribute to throttle or quota limits$/,
+  /^.*Usage Plan check succeeded for API Key  and API Stage .*$/,
+  /^.*Verifying Usage Plan for request: [\d\w-]+. API Key:  API Stage: .*/,
+];
+
 function addLambdaMetrics(data, match) {
   var now = dogapi.now();
 
@@ -74,6 +80,10 @@ function handleEvent(event, logger, cb) {
     var reportPoints = [];
 
     data.logEvents.forEach(function (line) {
+      if (ignoredPatterns.some(rule => rule.test(line.message))) {
+        return;
+      }
+
       logger.info(line.message);
 
       if (config.datadog !== '') {
