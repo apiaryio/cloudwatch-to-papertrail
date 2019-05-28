@@ -1,6 +1,11 @@
 # cloudwatch-to-papertrail
 Lambda to send logs from Cloudwatch to Papertrail
 
+## Deprecation Notice
+
+This package is no longer maintained by Apiary, use at your own risk. We
+welcome you to fork and maintain this package yourself.
+
 ## Usage
 
 First, ensure an IAM role exists called `lambda_basic_execution`,
